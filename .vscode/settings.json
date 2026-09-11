@@ -1,5 +1,6 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "git remote": true
+        "git remote": true,
+        "git merge": true
     }
 }
