@@ -1,0 +1,115 @@
+<main class="shell">
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">ED</span><span>Education Diary</span></div>
+    <label class="language-picker"
+      ><span class="sr-only">{{ i18n.t('language') }}</span
+      ><select [value]="i18n.language()" (change)="changeLanguage($any($event.target).value)">
+        @for (language of languages; track language.code) {
+          <option [value]="language.code">{{ language.label }}</option>
+        }
+      </select></label
+    >
+  </header>
+  <section class="hero">
+    <div>
+      <h1>{{ i18n.t('welcome') }}</h1>
+      <p class="intro">{{ i18n.t('intro') }}</p>
+    </div>
+    <div class="date-stamp">
+      <span>{{ i18n.t('today') }}</span
+      ><strong>{{
+        entryForm.controls.date.value
+          | date
+            : 'EEE, MMM
+        d'
+      }}</strong>
+    </div>
+  </section>
+  <section class="workspace">
+    <article class="composer panel">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">01</span>
+          <h2>{{ i18n.t('addNewEntry') }}</h2>
+        </div>
+      </div>
+      <form [formGroup]="entryForm" (ngSubmit)="saveEntry()">
+        <label
+          >{{ i18n.t('title')
+          }}<input formControlName="title" [placeholder]="i18n.t('titlePlaceholder')"
+        /></label>
+        @if (entryForm.controls.title.touched && entryForm.controls.title.invalid) {
+          <small class="error">{{ i18n.t('titleRequired') }}</small>
+        }
+        <label
+          >{{ i18n.t('description')
+          }}<textarea
+            formControlName="description"
+            rows="7"
+            [placeholder]="i18n.t('descriptionPlaceholder')"
+          ></textarea>
+        </label>
+        @if (entryForm.controls.description.touched && entryForm.controls.description.invalid) {
+          <small class="error">{{ i18n.t('descriptionRequired') }}</small>
+        }
+        <label>{{ i18n.t('date') }}<input type="date" formControlName="date" /></label>
+        <div class="form-footer">
+          @if (draftRestored) {
+            <span class="restore-notice">{{ i18n.t('draftRestored') }}</span>
+          } @else {
+            <span class="status">{{ status }}</span>
+          }
+          <button type="submit" [disabled]="isSaving">
+            {{ isSaving ? i18n.t('saving') : i18n.t('saveEntry') }} <span>→</span>
+          </button>
+        </div>
+      </form>
+    </article>
+    <section class="feed">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">02</span>
+          <h2>{{ i18n.t('recentHomework') }}</h2>
+        </div>
+        <div class="feed-actions">
+          <span class="count">{{ entries.length }} {{ i18n.t('entries') }}</span
+          ><button
+            class="clear-history"
+            type="button"
+            (click)="clearHistory()"
+            [disabled]="entries.length === 0"
+          >
+            {{ i18n.t('clearHistory') }}
+          </button>
+        </div>
+      </div>
+      @if (entries.length === 0) {
+        <div class="empty-state">
+          <p>{{ i18n.t('emptyTitle') }}</p>
+          <span>{{ i18n.t('emptyDescription') }}</span>
+        </div>
+      }
+      @for (entry of entries; track trackById($index, entry)) {
+        <article class="entry-card">
+          <div class="entry-date">
+            {{ entry.date | date: 'MMM d' }}<span>{{ entry.date | date: 'yyyy' }}</span>
+          </div>
+          <div class="entry-copy">
+            <h3>{{ entry.title }}</h3>
+            <p>{{ entry.description }}</p>
+          </div>
+          <button class="delete-entry" type="button" (click)="deleteEntry(entry)">
+            {{ i18n.t('deleteEntry') }}</button
+          ><button
+            class="history-remove"
+            type="button"
+            (click)="dismissEntry(entry)"
+            [attr.aria-label]="i18n.t('removeFromHistory')"
+          >
+            ×
+          </button>
+        </article>
+      }
+    </section>
+  </section>
+</main>
